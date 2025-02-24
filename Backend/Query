@@ -1,0 +1,12 @@
+CREATE DATABASE book_details;
+
+
+CREATE TABLE book_details (
+    id serial PRIMARY KEY,
+    title text NOT NULL ,
+    author text NOT NULL,
+    genre varchar(100) NOT NULL,
+    publication_date text NOT NULL,
+    brief_description varchar(255),
+    is_deleted BOOLEAN DEFAULT FALSE
+);
