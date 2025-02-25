@@ -4,7 +4,6 @@ const cors = require ("cors");
 require("dotenv").config();
 
 const app = express();
-const PORT = 9000;
 app.use (express.json());
 app.use(cors());
 
@@ -24,10 +23,10 @@ app.get("/books", async (req , res) =>{
 //Create: to Insert new book records into the database
 app.post("/books" , async (req , res) =>{
     try{
-        const {title, author, genre, publication_date, brief_description } = req.body;
+        const {title, author, genre, publication_date, description } = req.body;
         const result = await pool.query(
             "INSERT INTO book_details ( title, author, genre, publication_date, brief_description) VALUES ($1, $2, $3, $4, $5) RETURNING * ",
-            [title, author, genre, publication_date, brief_description]
+            [title, author, genre, publication_date, description]
         );
         res.json(result.rows[0]);
     } catch (err){
@@ -38,12 +37,12 @@ app.post("/books" , async (req , res) =>{
 
 
 //Update: to  Modify existing book details
-app.put("/books" , async (req , res)=>{
+app.put("/books/:id" , async (req , res)=>{
     try{
         const {id} = req.params;
-        const {title, author, genre, publication_date, brief_description } = req.body;        
+        const {title, author, genre, publication_date, description } = req.body;        
         const result = await pool.query("UPDATE book_details SET title = $1, author = $2, genre = $3,publication_date = $4, brief_description = $5 WHERE id = $6 RETURNING * ",
-            [title, author, genre, publication_date, brief_description, id]
+            [title, author, genre, publication_date, description, id]
         );
         res.json(result.rows[0]);
     } catch(err){
@@ -54,7 +53,7 @@ app.put("/books" , async (req , res)=>{
 
 
 //Delete: to Remove a book record from the database
-app.delete("/books" , async (req , res)=>{
+app.delete("/books/:id" , async (req , res)=>{
     try{
     const {id} = req.params;
     await pool.query ("UPDATE book_details SET is_deleted = true WHERE id = $1" , [id]);
@@ -68,6 +67,5 @@ app.delete("/books" , async (req , res)=>{
 
 
 // Start the Server
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-});
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
